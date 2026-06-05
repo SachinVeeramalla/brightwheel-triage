@@ -1,6 +1,10 @@
 import { openai } from "@/lib/openai";
 import { InboundMessage, ClassifierOutput } from "@/types/triage";
 import { trackTokens } from "@/lib/tokenTracker";
+import {
+  getRelevantExamples,
+  formatExamplesForPrompt,
+} from "@/lib/referenceDataset";
 
 const SYSTEM_PROMPT = `You are a classification specialist for Brightwheel's onboarding team. Brightwheel is an early education platform. The onboarding team handles newly signed schools in their first 30 days.
 

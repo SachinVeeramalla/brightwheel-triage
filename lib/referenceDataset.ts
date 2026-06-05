@@ -21,7 +21,6 @@ export async function getRelevantExamples(
 
   if (error || !data || data.length === 0) return [];
 
-  // Score each reference message by keyword overlap with the incoming message
   const incomingText = `${message.subject} ${message.body}`.toLowerCase();
   const incomingWords = new Set(
     incomingText.split(/\s+/).filter((w) => w.length > 4),
@@ -34,10 +33,8 @@ export async function getRelevantExamples(
     return { ...row, score: overlap };
   });
 
-  // Sort by overlap score descending, take top N
   const top = scored.sort((a, b) => b.score - a.score).slice(0, limit);
 
-  // If no overlap found, fall back to one example per major category
   if (top.every((r) => r.score === 0)) {
     const categories = [
       "urgent_escalation",
