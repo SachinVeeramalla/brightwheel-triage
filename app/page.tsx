@@ -54,6 +54,9 @@ type DashboardRow = {
   reasoning: string;
 };
 
+const BW_PRIMARY = "#4B4EFC";
+const BW_PRIMARY_DARK = "#3B3EC7";
+
 const PRIORITY_STYLES: Record<string, string> = {
   P1: "bg-red-100 text-red-800 border border-red-300",
   P2: "bg-amber-100 text-amber-800 border border-amber-300",
@@ -356,7 +359,8 @@ function TriageCard({
             </div>
           ) : (
             <textarea
-              className="w-full rounded-lg p-3 text-sm text-gray-800 bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full rounded-lg p-3 text-sm text-gray-800 bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 resize-none"
+              style={{ "--tw-ring-color": BW_PRIMARY } as React.CSSProperties}
               rows={6}
               value={editedReply}
               onChange={(e) => setEditedReply(e.target.value)}
@@ -366,7 +370,14 @@ function TriageCard({
             <div className="flex gap-2 mt-2">
               <button
                 onClick={openInEmail}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-700 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-white text-xs font-medium rounded-lg transition-colors"
+                style={{ backgroundColor: BW_PRIMARY }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = BW_PRIMARY_DARK)
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = BW_PRIMARY)
+                }
               >
                 <svg
                   className="w-3.5 h-3.5"
@@ -546,7 +557,10 @@ function Dashboard({
   if (loading) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-        <div className="w-6 h-6 rounded-full border-2 border-blue-500 border-t-transparent animate-spin mx-auto mb-3" />
+        <div
+          className="w-6 h-6 rounded-full border-2 border-t-transparent animate-spin mx-auto mb-3"
+          style={{ borderColor: BW_PRIMARY, borderTopColor: "transparent" }}
+        />
         <p className="text-gray-500 text-sm">Loading from Supabase...</p>
       </div>
     );
@@ -597,7 +611,7 @@ function Dashboard({
             onClick={() =>
               setFilter(filter === s.filterKey ? "all" : s.filterKey)
             }
-            className={`rounded-xl border p-4 text-center cursor-pointer transition-all ${filter === s.filterKey ? "border-gray-400 bg-gray-100 ring-2 ring-gray-300" : "bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50"}`}
+            className={`rounded-xl border p-4 text-center cursor-pointer transition-all ${filter === s.filterKey ? "bg-indigo-50 border-indigo-300 ring-2 ring-indigo-200" : "bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50"}`}
           >
             <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
             <div className="text-xs text-gray-500 mt-1">{s.label}</div>
@@ -615,7 +629,12 @@ function Dashboard({
               <button
                 key={f}
                 onClick={() => setFilter(filter === f ? "all" : f)}
-                className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${filter === f ? "bg-gray-900 text-white" : "text-gray-500 hover:bg-gray-100"}`}
+                className="px-2.5 py-1 rounded text-xs font-medium transition-colors"
+                style={
+                  filter === f
+                    ? { backgroundColor: BW_PRIMARY, color: "white" }
+                    : { color: "#6b7280" }
+                }
               >
                 {f === "all" ? "All" : f}
               </button>
@@ -664,7 +683,6 @@ function Dashboard({
                   />
                 </svg>
               </div>
-
               {expandedId === row.id && (
                 <div className="px-5 pb-5 pt-3 bg-gray-50 border-t border-gray-100">
                   <TriageCard
@@ -904,23 +922,53 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Brightwheel onboarding triage
-          </h1>
-          <p className="text-gray-500 mt-1 text-sm">
-            AI-powered message classification, prioritization, routing, and
-            reply drafting
-          </p>
+      {/* Header */}
+      <div
+        className="text-white px-4 py-4 mb-6"
+        style={{ backgroundColor: BW_PRIMARY }}
+      >
+        <div className="max-w-4xl mx-auto flex items-center gap-3">
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              style={{ color: BW_PRIMARY }}
+            >
+              <path
+                d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <h1 className="text-lg font-bold leading-tight">
+              Brightwheel onboarding triage
+            </h1>
+            <p className="text-indigo-200 text-xs">
+              AI-powered message classification, prioritization, routing, and
+              reply drafting
+            </p>
+          </div>
         </div>
+      </div>
 
+      <div className="max-w-4xl mx-auto px-4 pb-8">
+        {/* Tab navigation */}
         <div className="flex gap-1 mb-6 bg-white border border-gray-200 rounded-lg p-1 w-fit">
           {(["single", "batch", "dashboard"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors capitalize ${tab === t ? "bg-gray-900 text-white" : "text-gray-600 hover:text-gray-900"}`}
+              className="px-4 py-1.5 rounded-md text-sm font-medium transition-colors capitalize"
+              style={
+                tab === t
+                  ? { backgroundColor: BW_PRIMARY, color: "white" }
+                  : { color: "#4b5563" }
+              }
             >
               {t === "single"
                 ? "Single message"
@@ -941,7 +989,10 @@ export default function Home() {
                     Sender name
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 bg-white"
+                    style={
+                      { "--tw-ring-color": BW_PRIMARY } as React.CSSProperties
+                    }
                     placeholder="Sandra Rivera"
                     value={form.sender_name}
                     onChange={(e) =>
@@ -954,7 +1005,7 @@ export default function Home() {
                     Sender email
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 bg-white"
                     placeholder="srivera@school.org"
                     value={form.sender_email}
                     onChange={(e) =>
@@ -968,7 +1019,7 @@ export default function Home() {
                   Subject
                 </label>
                 <input
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 bg-white"
                   placeholder="URGENT - parents cannot log in"
                   value={form.subject}
                   onChange={(e) =>
@@ -981,7 +1032,7 @@ export default function Home() {
                   Message body
                 </label>
                 <textarea
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 resize-none bg-white"
                   rows={5}
                   placeholder="Paste the full message here..."
                   value={form.body}
@@ -993,7 +1044,10 @@ export default function Home() {
               <button
                 onClick={handleSingleSubmit}
                 disabled={processing}
-                className="w-full bg-gray-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{
+                  backgroundColor: processing ? BW_PRIMARY_DARK : BW_PRIMARY,
+                }}
               >
                 {processing ? "Processing..." : "Submit"}
               </button>
@@ -1037,7 +1091,7 @@ export default function Home() {
                 Expects columns: message_id, received_at, sender_name,
                 sender_email, subject, body
               </p>
-              <label className="flex items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl p-8 cursor-pointer hover:border-blue-400 transition-colors">
+              <label className="flex items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl p-8 cursor-pointer hover:border-indigo-400 transition-colors">
                 <svg
                   className="w-5 h-5 text-gray-400"
                   fill="none"
@@ -1075,9 +1129,10 @@ export default function Home() {
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2">
                   <div
-                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    className="h-2 rounded-full transition-all duration-300"
                     style={{
                       width: `${(batchProgress.current / batchProgress.total) * 100}%`,
+                      backgroundColor: BW_PRIMARY,
                     }}
                   />
                 </div>
@@ -1120,7 +1175,7 @@ export default function Home() {
                           batchFilter === s.filterKey ? "all" : s.filterKey,
                         )
                       }
-                      className={`rounded-xl border p-4 text-center cursor-pointer transition-all ${batchFilter === s.filterKey ? "border-gray-400 bg-gray-100 ring-2 ring-gray-300" : "bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50"}`}
+                      className={`rounded-xl border p-4 text-center cursor-pointer transition-all ${batchFilter === s.filterKey ? "bg-indigo-50 border-indigo-300 ring-2 ring-indigo-200" : "bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50"}`}
                     >
                       <div className={`text-2xl font-bold ${s.color}`}>
                         {s.value}
@@ -1144,7 +1199,12 @@ export default function Home() {
                           onClick={() =>
                             setBatchFilter(batchFilter === f ? "all" : f)
                           }
-                          className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${batchFilter === f ? "bg-gray-900 text-white" : "text-gray-500 hover:bg-gray-100"}`}
+                          className="px-2.5 py-1 rounded text-xs font-medium transition-colors"
+                          style={
+                            batchFilter === f
+                              ? { backgroundColor: BW_PRIMARY, color: "white" }
+                              : { color: "#6b7280" }
+                          }
                         >
                           {f === "all" ? "All" : f}
                         </button>

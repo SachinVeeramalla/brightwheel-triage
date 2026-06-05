@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bw-primary: #4b4efc;
+  --bw-primary-dark: #3b3ec7;
+  --bw-accent: #ff5a5f;
+  --bw-navy: #1a1a2e;
+  --bw-light: #f5f5ff;
+}
+
 input,
 textarea {
   color: #111827;
